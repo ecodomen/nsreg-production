@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 if [ -f .env ]; then
-  export $(echo $(cat .env | sed 's/#.*//g'| xargs) | envsubst)
+  set -a
+  source <(grep -v '^\s*#' .env | grep -v '^\s*$')
+  set +a
 fi
 
-source env/bin/activate
-
-python src/website/manage.py migrate
-python src/website/manage.py runserver
+poetry run python src/website/manage.py migrate
+poetry run python src/website/manage.py runserver

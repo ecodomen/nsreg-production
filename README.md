@@ -1,15 +1,19 @@
 # ngreg-watcher
 ## Установка
 1. Скопируйте репозиторий
-2. Установите requirements.txt
+2. Установите зависимости через Poetry:
+```bash
+pip install poetry
+poetry install
+```
 3. Запустить спайдеры:
 ```bash
-runspider.sh
+bash runspiders.sh
 ```
 ## Создание спайдера
-1.1 Разверните приложение, установите зависимости и активируйте env. Инструкция ниже
+1.1 Разверните приложение и установите зависимости. Инструкция ниже
 
-1.2 В [папке](/home/maria/projects/nsreg-watcher/src/grabber/nsreg/spiders) нужно создать новый парсер с обязательным нэймингом "nsreg_sitename"
+1.2 В [папке](src/grabber/nsreg/spiders) нужно создать новый парсер с обязательным нэймингом "nsreg_sitename"
 
 2. Посмотрите пример парсера с использованием композиции:
 [src/grabber/nsreg/spiders/nsreg_domainshop.py](src/grabber/nsreg/spiders/nsreg_domainshop.py)
@@ -126,20 +130,18 @@ def parse(self, response):
 
 # Развертывание приложения на Linux
 
-1. Установите Sendmail, docker, docker-compose
+1. Установите Docker, Docker Compose
 `sudo apt install docker docker-compose`
-2. Запустите скрипт по установке зависимостей
-`sh install.sh`
-	* При возникновении проблем с установкой пакета psycopg2, в файле модифицируйте файл при помощи команды:
-	 `sed -i 's/psycopg2/psycopg2-binary/' requirements.txt`
+2. Установите Poetry и зависимости проекта
+`pip install poetry && poetry install`
 3. Создайте файл окружения `.env` по шаблону `env.template`
 4. Запустите PostgreSQL при помощи команд:
 `export $(echo $(cat .env | sed 's/#.*//g'| xargs) | envsubst)`
 `sudo docker-compose up`
 5. Запустите <b>scrapy</b> при помощи команды:
-`sh runspiders.sh`
+`bash runspiders.sh`
 6. Запустите dev-сервер Django при помощи команды:
-`sh runsite.sh`
+`bash runsite.sh`
 
 # Развертывание под Windows
 
@@ -155,12 +157,10 @@ def parse(self, response):
 
 ## Настройка окружения
 
-1. Установите Sendmail, docker, docker-compose
-`sudo apt install sendemail docker docker-compose`
-2. Запустите скрипт по установке зависимостей
-`bash install.sh`
-	* При возникновении проблем с установкой пакета psycopg2, в файле модифицируйте файл при помощи команды:
-	 `sed -i 's/psycopg2/psycopg2-binary/' requirements.txt`
+1. Установите Docker, Docker Compose
+`sudo apt install docker docker-compose`
+2. Установите Poetry и зависимости проекта
+`pip install poetry && poetry install`
 3. Создайте файл окружения `.env` по шаблону:
 ```
 # DOCKER-COMPOSE POSTGRES SETTINGS
