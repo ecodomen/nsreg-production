@@ -1,9 +1,9 @@
 # syntax=docker/dockerfile:1
-FROM python:3.11
+FROM python:3.12
 COPY . /app/
 COPY .env /app/
 WORKDIR /app
 RUN apt-get update
 RUN apt-get install -y gettext-base
-RUN sh install.sh
+RUN pip install poetry && poetry install --no-root
 CMD ["python", "src/telegram_bot"]
