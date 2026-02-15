@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher, Router
+from aiogram.client.default import DefaultBotProperties
 from aiogram.filters import Command
 import subprocess
 import os
@@ -13,7 +14,7 @@ CHAT_ID = os.environ["CHAT_ID"]
 TOPIC_SUPPORT_ID = int(os.environ["TOPIC_SUPPORT_ID"])    # 1435
 
 router = Router()
-bot = Bot(TOKEN, parse_mode="markdown")
+bot = Bot(TOKEN, default=DefaultBotProperties(parse_mode="markdown"))
 
 
 def cut_log(log: str) -> str:
