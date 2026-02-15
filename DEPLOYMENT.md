@@ -14,8 +14,8 @@
   - [1. Подготовка сервера](#1-подготовка-сервера)
   - [2. Клонирование и настройка проекта](#2-клонирование-и-настройка-проекта)
   - [3. Настройка .env для сервера](#3-настройка-env-для-сервера)
-  - [4. Сборка статики Django](#4-сборка-статики-django)
-  - [5. Запуск контейнеров](#5-запуск-контейнеров)
+  - [4. Запуск контейнеров](#4-запуск-контейнеров)
+  - [5. Сборка статики Django](#5-сборка-статики-django)
   - [6. Настройка Nginx](#6-настройка-nginx)
   - [7. Установка SSL-сертификата (Let's Encrypt)](#7-установка-ssl-сертификата-lets-encrypt)
   - [8. Проверка работоспособности](#8-проверка-работоспособности)
@@ -276,7 +276,7 @@ DATABASE_NAME=nsreg
 PORT_DB=5432
 
 # DJANGO SETTINGS
-# Сгенерируйте уникальный ключ: python3 -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+# Сгенерируйте уникальный ключ: python3 -c "import secrets; print(secrets.token_urlsafe(50))"
 DJANGO_SECRET_KEY='<уникальный_секретный_ключ>'
 
 # TELEGRAM BOT
@@ -289,34 +289,7 @@ TOPIC_SUPPORT_ID=<ID топика в чате>
 
 > **`PORT_DB=5432`** — внутри Docker-сети контейнеры подключаются к внутреннему порту PostgreSQL (5432), а не к внешнему маппингу (5433).
 
-### 4. Сборка статики Django
-
-Django в production-режиме не раздает статику самостоятельно — это делает Nginx. Нужно собрать статические файлы.
-
-Создайте директорию для статики на хосте:
-
-```bash
-sudo mkdir -p /var/www/ecodomen.ru/static
-```
-
-Соберите статику внутри контейнера (после первого запуска контейнеров, см. шаг 5):
-
-```bash
-docker compose -f dev.yml exec django python src/website/manage.py collectstatic --noinput
-```
-
-Скопируйте статику из контейнера на хост:
-
-```bash
-docker compose -f dev.yml cp django:/app/src/website/staticfiles/. /var/www/ecodomen.ru/static/
-```
-
-> **Примечание:** если `collectstatic` ещё не настроен в проекте, Nginx будет проксировать запросы к статике через Django. Это работает, но медленнее. Для настройки `collectstatic` добавьте в `settings.py`:
-> ```python
-> STATIC_ROOT = BASE_DIR / "staticfiles"
-> ```
-
-### 5. Запуск контейнеров
+### 4. Запуск контейнеров
 
 ```bash
 cd ~/nsreg-watcher
@@ -350,6 +323,33 @@ docker compose -f dev.yml exec django python src/website/manage.py createsuperus
 ```bash
 curl -I http://localhost:8000/list/
 ```
+
+### 5. Сборка статики Django
+
+Django в production-режиме не раздает статику самостоятельно — это делает Nginx. Нужно собрать статические файлы.
+
+Создайте директорию для статики на хосте:
+
+```bash
+sudo mkdir -p /var/www/ecodomen.ru/static
+```
+
+Соберите статику внутри контейнера:
+
+```bash
+docker compose -f dev.yml exec django python src/website/manage.py collectstatic --noinput
+```
+
+Скопируйте статику из контейнера на хост:
+
+```bash
+docker compose -f dev.yml cp django:/app/src/website/staticfiles/. /var/www/ecodomen.ru/static/
+```
+
+> **Примечание:** если `collectstatic` ещё не настроен в проекте, Nginx будет проксировать запросы к статике через Django. Это работает, но медленнее. Для настройки `collectstatic` добавьте в `settings.py`:
+> ```python
+> STATIC_ROOT = BASE_DIR / "staticfiles"
+> ```
 
 ### 6. Настройка Nginx
 
