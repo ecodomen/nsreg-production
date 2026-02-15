@@ -1,3 +1,4 @@
+
 # Развертывание nsreg-watcher
 
 ## Содержание
@@ -139,9 +140,9 @@ bash runsite.sh
 Скрипт `runsite.sh` автоматически:
 1. Загружает переменные из `.env`
 2. Применяет миграции (`manage.py migrate`)
-3. Запускает dev-сервер на http://localhost:8000
+3. Запускает dev-сервер на http://localhost:8888
 
-Для создания суперпользователя (доступ к http://localhost:8000/admin/):
+Для создания суперпользователя (доступ к http://localhost:8888/admin/):
 
 ```bash
 export $(echo $(cat .env | sed 's/#.*//g'| xargs) | envsubst)
@@ -206,7 +207,7 @@ poetry run python src/telegram_bot
 └─────────┘                                                │
                                                            ▼
                                               ┌────────────────────┐
-                                              │  Django :8000      │
+                                              │  Django :8888      │
                                               │  (Docker-контейнер)│
                                               └────────┬───────────┘
                                                        │
@@ -302,7 +303,7 @@ Compose-файл `dev.yml` создает три сервиса:
 |--------|----------|------|
 | `postgres` | PostgreSQL база данных | 5433 (внешний) → 5432 (внутренний) |
 | `scrapy_telbot` | Scrapy-спайдеры + Telegram-бот | — |
-| `django` | Django веб-интерфейс | 8000 |
+| `django` | Django веб-интерфейс | 8888 |
 
 Проверьте, что контейнеры запустились:
 
@@ -321,7 +322,7 @@ docker compose -f dev.yml exec django python src/website/manage.py createsuperus
 Убедитесь, что Django отвечает:
 
 ```bash
-curl -I http://localhost:8000/list/
+curl -I http://localhost:8888/list/
 ```
 
 ### 5. Сборка статики Django
@@ -375,7 +376,7 @@ server {
 
     # Все остальные запросы — проксируются в Django
     location / {
-        proxy_pass http://127.0.0.1:8000;
+        proxy_pass http://127.0.0.1:8888;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -443,7 +444,7 @@ server {
     }
 
     location / {
-        proxy_pass http://127.0.0.1:8000;
+        proxy_pass http://127.0.0.1:8888;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -483,7 +484,7 @@ server {
 docker compose -f dev.yml ps
 
 # 2. Django отвечает локально
-curl -I http://localhost:8000/list/
+curl -I http://localhost:8888/list/
 
 # 3. Nginx проксирует
 curl -I http://ecodomen.ru/list/
@@ -654,18 +655,18 @@ poetry show --tree                  # дерево зависимостей
 
 ### Nginx возвращает 502 Bad Gateway
 
-1. Убедитесь, что Django-контейнер запущен и слушает порт 8000:
+1. Убедитесь, что Django-контейнер запущен и слушает порт 8888:
 ```bash
 docker compose -f dev.yml ps
-curl http://localhost:8000/list/
+curl http://localhost:8888/list/
 ```
 2. Проверьте логи Django:
 ```bash
 docker compose -f dev.yml logs django
 ```
-3. Проверьте, что порт 8000 не занят другим процессом:
+3. Проверьте, что порт 8888 не занят другим процессом:
 ```bash
-sudo ss -tlnp | grep 8000
+sudo ss -tlnp | grep 8888
 ```
 
 ### Статика не загружается (404 на CSS/JS)
