@@ -276,7 +276,7 @@ DATABASE_NAME=nsreg
 PORT_DB=5432
 
 # DJANGO SETTINGS
-# Сгенерируйте уникальный ключ: python3 -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+# Сгенерируйте уникальный ключ: python3 -c "import secrets; print(secrets.token_urlsafe(50))"
 DJANGO_SECRET_KEY='<уникальный_секретный_ключ>'
 
 # TELEGRAM BOT
